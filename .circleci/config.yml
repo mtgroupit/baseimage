@@ -1,0 +1,55 @@
+default-job: &default-job
+        docker:
+            - image: docker:18.09.5 # latest stable
+        steps:
+            - checkout
+            - setup_remote_docker
+            - run:
+                name: Load docker image layer cache
+                command: |
+                    docker pull mtgroupit/baseimage:$CIRCLE_JOB || true
+            - run:
+                name: Checking for upgrade
+                command: |
+                    if docker image ls -q mtgroupit/baseimage:$CIRCLE_JOB | grep -q .; then
+                        docker create --name check --rm --entrypoint=sh mtgroupit/baseimage:$CIRCLE_JOB -c /upgrade
+                        docker cp -L upgrade.$CIRCLE_JOB check:/upgrade
+                        docker start -a check > /tmp/build-args || true
+                    fi
+                    if ! grep -q "^--build-arg UPGRADE=[0-9]" /tmp/build-args 2>/dev/null; then
+                        echo "--build-arg UPGRADE=$(date +%s)" > /tmp/build-args
+                    fi
+            - run:
+                name: docker build
+                command: |
+                    docker build \
+                        $(cat /tmp/build-args) \
+                        --cache-from mtgroupit/baseimage:$CIRCLE_JOB \
+                        -t mtgroupit/baseimage:$CIRCLE_JOB \
+                        -f Dockerfile.$CIRCLE_JOB \
+                        .
+                    if test "$CIRCLE_BUILD_NUM"; then # empty on local circleci
+                        docker tag \
+                            mtgroupit/baseimage:$CIRCLE_JOB \
+                            mtgroupit/baseimage:$CIRCLE_JOB.$CIRCLE_BUILD_NUM
+                    fi
+            - deploy:
+                name: docker push
+                command: |
+                    if test "$CIRCLE_BRANCH" = "master" && test "$DOCKER_USER"; then
+                        docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
+                        docker push mtgroupit/baseimage:$CIRCLE_JOB
+                        if test "$CIRCLE_BUILD_NUM"; then # empty on local circleci
+                            docker push mtgroupit/baseimage:$CIRCLE_JOB.$CIRCLE_BUILD_NUM
+                        fi
+                    fi
+
+version: 2.1
+jobs:
+    build-golang:
+        <<: *default-job
+workflows:
+    version: 2
+    all:
+        jobs:
+            - build-golang

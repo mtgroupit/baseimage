@@ -1,0 +1,11 @@
+#!/bin/bash
+notgrep() { grep "$@" && return 1 || return 0; }
+
+set -x -e -o pipefail
+
+apt update 2>&1 |
+	grep -q "All packages are up to date." ||
+	UPGRADE=$(date +%s)
+
+echo "--build-arg UPGRADE=${UPGRADE:-$(cat /var/cache/UPGRADE)}"
+test -z "$UPGRADE" || exit 0
