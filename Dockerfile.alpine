@@ -1,0 +1,16 @@
+FROM alpine:3.9.3
+
+ENV DOCKERIZE_VER="0.11.0"
+
+RUN set -ex -o pipefail; \
+    build_pkgs="wget"; \
+    apk add --no-cache $build_pkgs \
+	ca-certificates; \
+    wget -q -O - https://github.com/powerman/dockerize/releases/download/v$DOCKERIZE_VER/dockerize-`uname -s`-`uname -m` | install /dev/stdin /usr/local/bin/dockerize; \
+    ### Cleanup
+    apk del $build_pkgs; \
+    rm -rf /tmp/*
+
+ARG UPGRADE
+RUN echo $UPGRADE > /var/cache/UPGRADE && \
+    apk --no-cache upgrade

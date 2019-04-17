@@ -1,0 +1,11 @@
+#!/bin/sh
+notgrep() { grep "$@" && return 1 || return 0; }
+
+set -x -e -o pipefail
+
+apk update -q
+apk upgrade -s |
+	notgrep -q Upgrading ||
+	UPGRADE=$(date +%s)
+
+echo "--build-arg UPGRADE=${UPGRADE:-$(cat /var/cache/UPGRADE)}"

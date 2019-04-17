@@ -46,10 +46,13 @@ default-job: &default-job
 
 version: 2.1
 jobs:
+    alpine:
+        <<: *default-job
     build-golang:
         <<: *default-job
 workflows:
     version: 2
     all:
         jobs:
+            - alpine
             - build-golang
