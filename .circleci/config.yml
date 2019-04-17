@@ -48,6 +48,8 @@ version: 2.1
 jobs:
     alpine:
         <<: *default-job
+    build-alpine:
+        <<: *default-job
     build-golang:
         <<: *default-job
 workflows:
@@ -55,4 +57,5 @@ workflows:
     all:
         jobs:
             - alpine
+            - build-alpine
             - build-golang

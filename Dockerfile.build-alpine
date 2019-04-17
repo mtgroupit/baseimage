@@ -1,0 +1,27 @@
+FROM alpine:3.9.3
+
+ENV DOCKER_VER="18.09.5" \
+    DOCKER_COMPOSE_VER="1.23.2" \
+    DOCKERIZE_VER="0.11.0" \
+    GLIBC_VER="2.28-r0"
+
+RUN set -ex -o pipefail; \
+    build_pkgs=""; \
+    apk add --no-cache $build_pkgs \
+	git openssh-client tar gzip ca-certificates curl wget bash \
+	python jq; \
+    wget -q -O - https://download.docker.com/linux/static/stable/x86_64/docker-$DOCKER_VER.tgz | tar -xzf - -O docker/docker    | install /dev/stdin /usr/local/bin/docker; \
+    wget -q -O - https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VER/docker-compose-`uname -s`-`uname -m`   | install /dev/stdin /usr/local/bin/docker-compose; \
+    wget -q -O - https://github.com/powerman/dockerize/releases/download/v$DOCKERIZE_VER/dockerize-`uname -s`-`uname -m`        | install /dev/stdin /usr/local/bin/dockerize; \
+    # glibc for docker-compose https://github.com/docker/compose/blob/master/Dockerfile.run
+    wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub; \
+    wget -q -O /tmp/glibc-$GLIBC_VER.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC_VER/glibc-$GLIBC_VER.apk; \
+    apk add /tmp/glibc-$GLIBC_VER.apk; \
+    ln -s /lib/libz.so.1 /lib/libc.musl-x86_64.so.1 /usr/glibc-compat/lib/; \
+    ### Cleanup
+    # apk del $build_pkgs; \
+    rm -rf /tmp/*
+
+ARG UPGRADE
+RUN echo $UPGRADE > /var/cache/UPGRADE && \
+    apk --no-cache upgrade
