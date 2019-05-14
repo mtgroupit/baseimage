@@ -1,5 +1,5 @@
 # https://github.com/golang/go/issues/14481
-FROM golang:1.12.4
+FROM golang:1.12.5
 
 # Debian's /bin/sh doesn't support `set -o pipefail`.
 SHELL ["/bin/bash", "-c"]
