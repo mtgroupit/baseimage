@@ -1,12 +1,14 @@
-FROM alpine:3.9.3
+FROM alpine:3.9.4
 
-ENV DOCKERIZE_VER="0.11.0"
+ENV DOCKERIZE_VER="0.11.0" \
+    CONSUL_VER="1.5.0"
 
 RUN set -ex -o pipefail; \
     build_pkgs="wget"; \
     apk add --no-cache $build_pkgs \
 	ca-certificates; \
-    wget -q -O - https://github.com/powerman/dockerize/releases/download/v$DOCKERIZE_VER/dockerize-`uname -s`-`uname -m` | install /dev/stdin /usr/local/bin/dockerize; \
+    wget -q -O - https://github.com/powerman/dockerize/releases/download/v${DOCKERIZE_VER}/dockerize-`uname -s`-`uname -m` | install /dev/stdin /usr/local/bin/dockerize; \
+    wget -q -O - https://releases.hashicorp.com/consul/${CONSUL_VER}/consul_${CONSUL_VER}_linux_amd64.zip | unzip /dev/stdin -d /usr/local/bin/ && chmod +x /usr/local/bin/consul; \
     ### Cleanup
     apk del $build_pkgs; \
     rm -rf /tmp/*
