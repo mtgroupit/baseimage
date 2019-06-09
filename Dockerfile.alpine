@@ -1,7 +1,7 @@
 FROM alpine:3.9.4
 
 ENV DOCKERIZE_VER="0.11.0" \
-    CONSUL_VER="1.5.0"
+    CONSUL_VER="1.5.1"
 
 RUN set -ex -o pipefail; \
     build_pkgs="wget"; \
