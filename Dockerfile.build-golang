@@ -1,5 +1,5 @@
 # https://github.com/golang/go/issues/14481
-FROM golang:1.12.9
+FROM golang:1.13
 
 # Debian's /bin/sh doesn't support `set -o pipefail`.
 SHELL ["/bin/bash", "-c"]
@@ -9,6 +9,7 @@ ENTRYPOINT \
     HOME=/home/app exec chpst -u $(groups app | sed 's/ /:/g;s/:\+/:/g') "$0" "$@";
 
 ENV LANG=C.UTF-8 \
+    GOPRIVATE=github.com/mtgroupit \
     DOCKER_VER="18.09.7" \
     DOCKER_COMPOSE_VER="1.24.1" \
     SETUP_VOLUME_VER="0.3.0" \
