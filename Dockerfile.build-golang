@@ -25,7 +25,7 @@ RUN set -ex -o pipefail; \
     build_pkgs="unzip"; \
     apt update; \
     apt install -y --no-install-recommends $build_pkgs \
-	sudo runit jq; \
+	sudo runit jq patch; \
     cd /tmp; \
     wget -q -O - https://download.docker.com/linux/static/stable/x86_64/docker-$DOCKER_VER.tgz | tar -xzf - -O docker/docker    | install /dev/stdin /usr/local/bin/docker; \
     wget -q -O - https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VER/docker-compose-`uname -s`-`uname -m`   | install /dev/stdin /usr/local/bin/docker-compose; \
