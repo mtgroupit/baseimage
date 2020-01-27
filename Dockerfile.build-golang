@@ -1,5 +1,5 @@
 # https://github.com/golang/go/issues/14481
-FROM golang:1.13
+FROM golang:1.13.6
 
 # Debian's /bin/sh doesn't support `set -o pipefail`.
 SHELL ["/bin/bash", "-c"]
@@ -11,11 +11,11 @@ ENTRYPOINT \
 
 ENV LANG=C.UTF-8 \
     GOPRIVATE=github.com/mtgroupit \
-    DOCKER_VER="18.09.7" \
-    DOCKER_COMPOSE_VER="1.24.1" \
+    DOCKER_VER="19.03.5" \
+    DOCKER_COMPOSE_VER="1.25.2" \
     SETUP_VOLUME_VER="0.3.0" \
-    DOCKERIZE_VER="0.11.0" \
-    PROTOC_VER="3.8.0" \
+    DOCKERIZE_VER="0.11.2" \
+    PROTOC_VER="3.10.1" \
     PROTOC_GO_VER="1.3.2" \
     GO_SWAGGER_VER="005c149d" \
     GOLANGCI_LINT_VER="1.20.0"
@@ -28,7 +28,7 @@ RUN set -ex -o pipefail; \
 	sudo runit jq patch; \
     cd /tmp; \
     wget -q -O - https://download.docker.com/linux/static/stable/x86_64/docker-$DOCKER_VER.tgz | tar -xzf - -O docker/docker    | install /dev/stdin /usr/local/bin/docker; \
-    wget -q -O - https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VER/docker-compose-`uname -s`-`uname -m`   | install /dev/stdin /usr/local/bin/docker-compose; \
+    wget -q -O - https://github.com/docker/compose/releases/download/v$DOCKER_COMPOSE_VER/docker-compose-`uname -s`-`uname -m`   | install /dev/stdin /usr/local/bin/docker-compose; \
     wget -q -O - https://raw.githubusercontent.com/powerman/alpine-runit-volume/v$SETUP_VOLUME_VER/setup-volume                 | install /dev/stdin /usr/local/sbin/setup-volume; \
     wget -q -O - https://github.com/powerman/dockerize/releases/download/v$DOCKERIZE_VER/dockerize-`uname -s`-`uname -m`        | install /dev/stdin /usr/local/bin/dockerize; \
     wget -q -O protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VER/protoc-$PROTOC_VER-$(uname -s)-$(uname -m).zip; unzip -q -o protoc.zip -d /usr/local/ -x readme.txt; \

@@ -1,8 +1,8 @@
-FROM alpine:3.10.0
+FROM alpine:3.11.3
 
-ENV DOCKER_VER="18.09.7" \
-    DOCKER_COMPOSE_VER="1.24.1" \
-    DOCKERIZE_VER="0.11.0" \
+ENV DOCKER_VER="19.03.5" \
+    DOCKER_COMPOSE_VER="1.25.2" \
+    DOCKERIZE_VER="0.11.2" \
     GLIBC_VER="2.29-r0"
 
 RUN set -ex -o pipefail; \
@@ -11,7 +11,7 @@ RUN set -ex -o pipefail; \
 	git openssh-client tar gzip ca-certificates curl wget bash \
 	python jq; \
     wget -q -O - https://download.docker.com/linux/static/stable/x86_64/docker-$DOCKER_VER.tgz | tar -xzf - -O docker/docker    | install /dev/stdin /usr/local/bin/docker; \
-    wget -q -O - https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VER/docker-compose-`uname -s`-`uname -m`   | install /dev/stdin /usr/local/bin/docker-compose; \
+    wget -q -O - https://github.com/docker/compose/releases/download/v$DOCKER_COMPOSE_VER/docker-compose-`uname -s`-`uname -m`   | install /dev/stdin /usr/local/bin/docker-compose; \
     wget -q -O - https://github.com/powerman/dockerize/releases/download/v$DOCKERIZE_VER/dockerize-`uname -s`-`uname -m`        | install /dev/stdin /usr/local/bin/dockerize; \
     # glibc for docker-compose https://github.com/docker/compose/blob/master/Dockerfile.run
     wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub; \
